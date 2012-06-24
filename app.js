@@ -28,10 +28,15 @@ app.configure('production', function(){
 });
 
 // Routes
-
-console.log(producto.index)
-
 app.get('/', producto.index)
+
+app.get('/producto/:id', producto.show_edit)
+
+app.post('/producto/:id', producto.update)
+
+app.get('/delete-producto/:id', producto.remove)
+
+app.get('/nuevo-producto', producto.create)
 
 
 app.listen(3000, function(){

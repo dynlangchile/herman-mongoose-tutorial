@@ -104,7 +104,7 @@ Con nuestras rutas claras, solo nos queda escribir el código, y es lo que harem
 El lector astuto dirá "Partamos por las rutas, ya que las definimos". La instalación de express tiene estas dos lineas en su archivo `app.js`:
 
 ````javascript
-  var routes = require('./routes');
+var routes = require('./routes');
 
 //...
 
@@ -139,12 +139,38 @@ app.get('/', producto.index)
 
 Nosotros, le estamos diciendo a express "Carga el módulo producto que está en `/controllers/producto.js`" y "Cuando el usuario haga un GET a `/` utiliza la función `index` la que vive en `producto.js`".
 
-Está función no hace más que devolver el texto 'Funciona!'. Detengamos la ejecución de app.js, reiniemosla y hagamos la consulta:
+Está función no hace más que devolver el texto 'Funciona!'. Detengamos la ejecución de app.js, reiniciemosla y hagamos la consulta:
 
 (Ver imagen en http://cl.ly/233i1v1k3T2B1O16001o)
 
 ### La aplicación propiamente tal
 
-/////// Work in Progress..
+Lo primero que haremos es finiquitar nuestro trabajo en `app.js` escribiendo todas las rutas y sus handlers, y luego nos concentraremos en manejar las peticiones a las distintas rutas.
+
+Escribamos entonces en `app.js` las siguientes rutas:
+
+````javascript
+// Routes
+app.get('/', producto.index)
+
+app.get('/producto/:id', producto.show_edit)
+
+app.post('/producto/:id', producto.update)
+
+app.get('/delete-producto/:id', producto.remove)
+
+app.get('/nuevo-producto', producto.create)
+````
+
+Debemos escribir los handlers en producto.js, responderemos, como placeholders, el nombre de la función. Más adelante, escribirimos codigo adecuado para cada una. Por ejemplo para `show_edit`:
+
+````javascript
+exports.show_edit = function (req, res, next) {
+    res.send('show_edit')
+}
+````
+
+
+
 
 
