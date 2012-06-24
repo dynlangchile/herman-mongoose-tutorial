@@ -9,7 +9,7 @@ Quiero hacer un _stress_ en la idea que esto es una *sugerencia* de como atacar 
 
 # Prerequisitos
 
-Para que el ejemplo funcione debemos tener en nuestra maquina de desarrollo (idealmente en sus últimas versiones)
+Para que el ejemplo funcione debemos tener en nuestra maquina de desarrollo (idealmente en sus últimas versiones). Se dejan las respectivas instalaciones como ejercicio al lector.
 
 * Node.js
 * MongoDB
@@ -78,20 +78,73 @@ Ahora que ya tenemos un objeto, y un documento que lo describe, es hora de dise�
 
 En verdad, podríamos hacer un diseño mayor, pero tenemos ideas claras de un modelo CRUD acá (Create, Read, Update, Delete), por lo que, y para hacer el tutorial breve, trabajaremos así.
 
-LO que sigue es gestar las rutas que harán estas actividades reales:
+Lo que sigue es gestar las rutas que harán estas actividades reales:
 
-* Listarlos                                       :     GET     /
-* Escoger uno y ver su descripción en detalle     :     GET     /producto/:id
-* Editar un producto                              :     GET     /producto/:id   (usaremos la misma ruta, pero guardaremos con...)
-* Guardar un producto                             :     POST    /producto/:id
-* Eliminar un producto                            :     GET     /delete-producto/:id
-* Crear uno nuevo                                 :     GET     /nuevo-producto
+* Listarlos
+    * `GET     /`
+* Escoger uno y ver su descripción en detalle
+    * `GET     /producto/:id`
+* Editar un producto
+    * `GET     /producto/:id`   (usaremos la misma ruta, pero guardaremos con...)
+* Guardar un producto
+    * `POST    /producto/:id`
+* Eliminar un producto
+    * `GET     /delete-producto/:id`
+* Crear uno nuevo
+    * `GET     /nuevo-producto`
 
 Para los avanzados en Verbos HTTP, me podrían decir que la creación puede ser hecha con PUT, y el borrado con DELETE, en este tutorial, iremos muy básico, solo con GET y POST. Se invita desde luego toda pull request para hacer este tutorial más firme.
 
-Con nuestras rutas claras, solo nos queda, escribir el código, y es lo que haremos.
+Con nuestras rutas claras, solo nos queda escribir el código, y es lo que haremos.
 
+# Desarrollo de nuestra aplicación
 
+### Ensayo inicial
 
+El lector astuto dirá "Partamos por las rutas, ya que las definimos". La instalación de express tiene estas dos lineas en su archivo `app.js`:
+
+````javascript
+  var routes = require('./routes');
+
+//...
+
+app.get('/', routes.index);
+````
+
+Aquí le decimos a la aplicación, al principio, "Usa como módulo el archivo /routes/index.js (implícito) y referenciemoslo con la variable `routes`", luego le decimos "Cuando el usuario haga un GET, carga la función `index` en el módulo `routes`".
+
+En esta parte empieza mi sugerencia propiamente tal, ya que borraremos estas líneas y crearemos nuestras funciones en `controladores' de manera de abrazar el modelo MVC (Model, View y Controller).
+
+Crearemos, primero el archivo `/controllers/producto.js`. Este tendrá todos los _handlers_ (manejadores) de las rutas diseñadas, Escribamos las siguientes líneas para entender como funciona este sistema:
+
+* En /controllers/producto.js
+
+````javascript
+exports.index = function (req, res, next) {
+
+  res.send('Funciona!')
+}
+````
+
+* Y, en /app.js
+
+````javascript
+// Al principio
+var producto  = require('./controllers/producto')
+
+//... Y despues del comentario // Routes
+app.get('/', producto.index)
+
+````
+
+Nosotros, le estamos diciendo a express "Carga el módulo producto que está en `/controllers/producto.js`" y "Cuando el usuario haga un GET a `/` utiliza la función `index` la que vive en `producto.js`".
+
+Está función no hace más que devolver el texto 'Funciona!'. Detengamos la ejecución de app.js, reiniemosla y hagamos la consulta:
+
+(Ver imagen en http://cl.ly/233i1v1k3T2B1O16001o)
+
+### La aplicación propiamente tal
+
+/////// Work in Progress..
 
 
