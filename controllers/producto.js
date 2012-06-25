@@ -1,6 +1,6 @@
 
 exports.index = function (req, res, next) {
-  res.send('index')
+  res.render('index', { title: 'Lista de Productos'})
 }
 
 exports.show_edit = function (req, res, next) {

@@ -170,7 +170,83 @@ exports.show_edit = function (req, res, next) {
 }
 ````
 
+### Desarrollando las rutas
 
+#### Home (/)
 
+Queremos mostrar una tabla con la lista de productos que tenemos en nuestra base de datos. Esto, en html es algo asi como:
 
+````html
+<html>
+  <body>
+    <h2>Tabla de Productos</h2>
+    <table border="1">
+      <tr>
+        <th>Producto</th>
+        <th>Descripcion</th>
+        <th>Precio</th>
+      </tr>
+      <tr>
+        <td><a href="/super8/">Super 8</a></td>
+        <td>Barra de Chocolate</td>
+        <td>3.50</td>
+      </tr>
+      <tr>
+        <td><a href="/papas-fritas/">Papas Fritas</a></td>
+        <td>Crujientes del Mediterraneo</td>
+        <td>4.50</td>
+      </tr>
+      <tr>
+        <td><a href="/coca-cola/">Coca Cola</a></td>
+        <td>Agua Carbonatada con Azucar</td>
+        <td>2.80</td>
+      </tr>
+    </table>
+  </body>
+</html>
+
+````
+Lo cual se renderea a esta imagen: (http://cl.ly/3e1e0A021d3R171K0f3v).
+
+Para lograr esto usaremos un template de `jade`, librería que viene incluída en expressJS. Si observamos, en la carpeta `views`tenemos todo lo que necesitamos: Un archivo `layout.jade`, el cual no tocaremos, y un archivo `index.js` el cual editaremos para llegar al `html` descrito arriba. Abramos el archivo `index.js` para incluir el siguiente código de template `jade`:
+
+````jade
+h2 Tabla de Productos
+table(border='1')
+  tr
+    th Producto
+    th Descripción
+    th Precio
+  tr
+    td
+      a(href="/super8") Super 8
+    td Barra de Chocolate
+    td 3.50
+  tr
+    td
+      a(href='/papas-fritas') Papas Fritas
+    td Crujientes del Mediterraneo
+    td 4.50
+  tr
+    td
+      a(href='/coca-cola') Coca Cola
+    td Agua Carbonatada con Azucar
+    td 2.80
+````
+
+Jade puede ser extraño al principio, pero es muy poderoso, ya que podemos insertar código de javascript, hacer loops y un montón de cosas que iremos viendo. Lo importante es que aumenta nuestra productividad. Ahora debemos decirle al controlador que cargue este template. Iremos al archivo `controllers/producto.js` modificando la función `exports.index` así:
+
+````javascript
+exports.index = function (req, res, next) {
+  res.render('index', { title: 'Lista de Productos'})
+}
+````
+
+Para probar nuestro cambios, no olvidemos de detener express (`CTRl+C`) e iniciar la aplicación de nuevo (`$ node app.js`). El resultado al llamar a `http://localhost:3000` debería ser: 
+
+(Pantallazo: http://cl.ly/1M2M1W1N2n3X1n080i17)
+
+Sin embargo, estos datos son _dummy_. Liberemos el poder de la base de datos `MongoDB`:
+
+(WIP.....)
 
