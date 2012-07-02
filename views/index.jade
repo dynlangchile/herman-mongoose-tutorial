@@ -4,18 +4,10 @@ table(border='1')
     th Producto
     th Descripción
     th Precio
-  tr
-    td
-      a(href="/super8") Super 8
-    td Barra de Chocolate
-    td 3.50
-  tr
-    td
-      a(href='/papas-fritas') Papas Fritas
-    td Crujientes del Mediterraneo
-    td 4.50
-  tr
-    td
-      a(href='/coca-cola') Coca Cola
-    td Agua Carbonatada con Azucar
-    td 2.80
+  - if (productos)
+    - each producto in productos
+      tr
+        td
+          a(href="/" + producto._id.toString()) #{producto.nombre}
+        td #{producto.descripcion}
+        td #{producto.precio}

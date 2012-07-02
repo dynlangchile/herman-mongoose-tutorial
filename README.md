@@ -1,4 +1,4 @@
-herman-mongoose-suggestion
+herman-mongoose-tutorial
 ==========================
 
 Simple ejemplo de como usar la mezcla de express con mongoose (mongoDB librería) para interactuar de manera CRUD con un objeto.
@@ -9,7 +9,7 @@ Quiero hacer un _stress_ en la idea que esto es una *sugerencia* de como atacar 
 
 # Prerequisitos
 
-Para que el ejemplo funcione debemos tener en nuestra maquina de desarrollo (idealmente en sus últimas versiones). Se dejan las respectivas instalaciones como ejercicio al lector.
+Para que el ejemplo funcione debemos tener los puntos descritos abajo en nuestra maquina de desarrollo (idealmente en sus últimas versiones). Se dejan las respectivas instalaciones como ejercicio al lector.
 
 * Node.js
 * MongoDB
@@ -34,7 +34,7 @@ var Schema = require('mongoose').Schema
 var producto_schema = new Schema({
   nombre        :   String,
   descripcion   :   String,
-  precio        :   String
+  precio        :   Number
 })
 
 module.exports = producto_schema
@@ -246,7 +246,114 @@ Para probar nuestro cambios, no olvidemos de detener express (`CTRl+C`) e inicia
 
 (Pantallazo: http://cl.ly/1M2M1W1N2n3X1n080i17)
 
-Sin embargo, estos datos son _dummy_. Liberemos el poder de la base de datos `MongoDB`:
+[PlaceHolder: Parte 2 en nodehispano.com](http://www.nodehispano.com/2012/06/guia-express-mongoose-para-node-js-parte-i-nodejs/)
 
-(WIP.....)
+Sin embargo, estos datos son _dummy_. Liberemos el poder de la base de datos `MongoDB`, recordemos que introdujimos este documento:
 
+````bash
+> db.productos.findOne()
+{
+  "_id" : ObjectId("4fe6454a8c136cf49721359f"),
+  "nombre" : "Papas Fritas",
+  "descripcion" : "Crujientes, sabor mediterraneo",
+  "precio" : 2.5
+}
+````
+
+¿Cómo conectamos nuestra base de datos MongoDB usando node.js? Usando la librería [mongoose](http://mongoosejs.com/). 
+
+Una vez modificado `package.json`, no olvidemos de actualizar nuestro modulos de node via `npm install -f` en el directorio de nuestra aplicación.
+
+El momento de la base de datos llegó, recordemos que al principio creamos el archivo `models/producto.js`:
+
+* models/producto.js
+
+````javascript
+
+````
+
+
+... Y, Modifiquemos nuestros archivos de la siguiente manera:
+
+* package.json
+
+````javascript
+{
+    "name": "herman-mongoose-suggestion"
+  , "version": "1.0.0"
+  , "dependencies": {
+      "express"     : "2.5.8"
+    , "jade"        : "0.25.x"
+    , "mongoose"    : "2.5.10"
+  }
+}
+````
+* controllers/producto.js
+
+````javascript
+
+// Creación de la Conexión
+var mongoose        = require('mongoose')
+  , db_lnk          = 'mongodb://localhost/supermercado'
+  , db              = mongoose.createConnection(db_lnk)
+
+// Creación de variables para cargar el modelo
+var producto_schema = require('../models/producto')
+  , Producto = db.model('Producto', producto_schema)
+
+````
+Ahora, existe, por supuesto la posibilidad de montar de una manera generar la conexión para toda la aplicación. No la tocaremos sin embargo en este tutorial.
+
+Modificamos la función `exports.index`, siempre dentro de `controllers/producto.js`para que recoja los productos:
+
+* controllers/producto.js
+
+````javascript
+exports.index = function (req, res, next) {
+
+  Producto.find(gotProducts)
+
+  // NOTA: Creo que es bueno usar verbos en inglés para las funciones,
+  //       por lo cómodo que son en estos casos (get, got; find, found)
+  function gotProducts (err, productos) {
+    if (err) {
+      console.log(err)
+      return next()
+    }
+
+    return res.render('index', {title: 'Lista de Productos', productos: productos})
+  }
+}
+````
+
+Nótese la estructura de callbacks: Cuando se pide la lista de productos, sólo al llegar la respuesta invocamos a `gotProducts`, el cual llama a la renderización a través de `res.render` de la página. Para los que vienen de otros lenguajes, esta manera de modelar, puede ser confusa al principio. Pero tiene sus ventajas en el escenario web, el cual, a mi parecer es completamente orientado al evento.
+
+Tenemos listo el back-end! Ya tenemos una lista de productos, ejecutamos? Aún no, ya que `res.render` cargaría el _template_ _jade_, pero no le está poniendo los datos. Por lo que modificaremos `views/index.jade` para tal efecto:
+
+* views/index.jade
+
+````jade
+h2 Tabla de Productos
+table(border='1')
+  tr
+    th Producto
+    th Descripción
+    th Precio
+  - if (productos)
+    - each producto in productos
+      tr
+        td
+          a(href="/" + producto._id.toString()) #{producto.nombre}
+        td #{producto.descripcion}
+        td #{producto.precio}
+```` 
+
+Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
+
+(Pantallazo: XXX)
+
+#### Página de Edición de un Producto (/producto/:id)
+
+Si clickamos en el link del primer producto obtenidos, tendremos un mensaje que no podemos ver el producto. Tomaremos las medidas para ello.
+
+(work in progress...)
