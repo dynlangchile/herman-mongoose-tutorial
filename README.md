@@ -269,7 +269,15 @@ El momento de la base de datos llegó, recordemos que al principio creamos el ar
 * models/producto.js
 
 ````javascript
+var Schema = require('mongoose').Schema
 
+var producto_schema = new Schema({
+  nombre        :   String,
+  descripcion   :   String,
+  precio        :   Number
+})
+
+module.exports = producto_schema
 ````
 
 
@@ -346,11 +354,11 @@ table(border='1')
           a(href="/" + producto._id.toString()) #{producto.nombre}
         td #{producto.descripcion}
         td #{producto.precio}
-```` 
+````
 
 Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
 
-(Pantallazo: XXX)
+(Pantallazo: http://cl.ly/2F2O0Z0w1z2F2i2p0Z3O)
 
 #### Página de Edición de un Producto (/producto/:id)
 
