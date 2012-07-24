@@ -262,8 +262,6 @@ Sin embargo, estos datos son _dummy_. Liberemos el poder de la base de datos `Mo
 
 ¿Cómo conectamos nuestra base de datos MongoDB usando node.js? Usando la librería [mongoose](http://mongoosejs.com/). 
 
-Una vez modificado `package.json`, no olvidemos de actualizar nuestro modulos de node via `npm install -f` en el directorio de nuestra aplicación.
-
 El momento de la base de datos llegó, recordemos que al principio creamos el archivo `models/producto.js`:
 
 * models/producto.js
@@ -280,7 +278,6 @@ var producto_schema = new Schema({
 module.exports = producto_schema
 ````
 
-
 ... Y, Modifiquemos nuestros archivos de la siguiente manera:
 
 * package.json
@@ -296,6 +293,9 @@ module.exports = producto_schema
   }
 }
 ````
+
+Una vez modificado `package.json`, no olvidemos de actualizar nuestro modulos de node via `npm install -f` en el directorio de nuestra aplicación.
+
 * controllers/producto.js
 
 ````javascript
@@ -364,4 +364,4 @@ Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
 
 Si clickamos en el link del primer producto obtenidos, tendremos un mensaje que no podemos ver el producto. Tomaremos las medidas para ello.
 
-(work in progress...)
+(WIP: Work in Progress...)
