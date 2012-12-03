@@ -18,7 +18,7 @@ Para que el ejemplo funcione debemos tener los puntos descritos abajo en nuestra
 
 # Preliminares - Diseño
 
-Una manera rapida de partir es definiendo el vector en dos dimensiones: La definición del objeto (modelo) y las rutas web que queremos usar para "hablar" con él.
+Una manera rapida de partir es definiendo el vector solución en dos dimensiones: La definición del objeto (modelo) y las rutas web que queremos usar para "hablar" con él.
 
 ## Modelo del Objeto
 
@@ -244,9 +244,7 @@ exports.index = function (req, res, next) {
 
 Para probar nuestro cambios, no olvidemos de detener express (`CTRl+C`) e iniciar la aplicación de nuevo (`$ node app.js`). El resultado al llamar a `http://localhost:3000` debería ser: 
 
-(Pantallazo: http://cl.ly/1M2M1W1N2n3X1n080i17)
-
-[PlaceHolder: Parte 2 en nodehispano.com](http://www.nodehispano.com/2012/06/guia-express-mongoose-para-node-js-parte-i-nodejs/)
+![Pantallazo](http://cl.ly/image/233i1v1k3T2B1O16001o/Screen%20Shot%202012-06-23%20at%209.38.57%20PM.png7)
 
 Sin embargo, estos datos son _dummy_. Liberemos el poder de la base de datos `MongoDB`, recordemos que introdujimos este documento:
 
@@ -358,7 +356,7 @@ table(border='1')
 
 Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
 
-(Pantallazo: http://cl.ly/2F2O0Z0w1z2F2i2p0Z3O)
+![Pantallazo](http://cl.ly/image/3e1e0A021d3R171K0f3v/Screen%20Shot%202012-06-25%20at%2012.51.25%20PM.png)
 
 #### Página de Edición de un Producto (/producto/:id)
 
