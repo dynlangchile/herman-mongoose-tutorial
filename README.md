@@ -141,7 +141,7 @@ Nosotros, le estamos diciendo a express "Carga el módulo producto que está en 
 
 Está función no hace más que devolver el texto 'Funciona!'. Detengamos la ejecución de app.js, reiniciemosla y hagamos la consulta:
 
-(Ver imagen en http://cl.ly/233i1v1k3T2B1O16001o)
+![Pantallazo](http://cl.ly/image/233i1v1k3T2B1O16001o/Screen%20Shot%202012-06-23%20at%209.38.57%20PM.png)
 
 ### La aplicación propiamente tal
 
@@ -206,7 +206,7 @@ Queremos mostrar una tabla con la lista de productos que tenemos en nuestra base
 </html>
 
 ````
-Lo cual se renderea a esta imagen: (http://cl.ly/3e1e0A021d3R171K0f3v).
+Lo cual se renderea a ![esta imagen](http://cl.ly/image/3e1e0A021d3R171K0f3v/Screen%20Shot%202012-06-25%20at%2012.51.25%20PM.png):
 
 Para lograr esto usaremos un template de `jade`, librería que viene incluída en expressJS. Si observamos, en la carpeta `views`tenemos todo lo que necesitamos: Un archivo `layout.jade`, el cual no tocaremos, y un archivo `index.js` el cual editaremos para llegar al `html` descrito arriba. Abramos el archivo `index.js` para incluir el siguiente código de template `jade`:
 
@@ -244,7 +244,7 @@ exports.index = function (req, res, next) {
 
 Para probar nuestro cambios, no olvidemos de detener express (`CTRl+C`) e iniciar la aplicación de nuevo (`$ node app.js`). El resultado al llamar a `http://localhost:3000` debería ser: 
 
-![Pantallazo](http://cl.ly/image/233i1v1k3T2B1O16001o/Screen%20Shot%202012-06-23%20at%209.38.57%20PM.png7)
+![Pantallazo](http://cl.ly/image/1M2M1W1N2n3X1n080i17/Screen%20Shot%202012-06-25%20at%201.09.26%20PM.png)
 
 Sin embargo, estos datos son _dummy_. Liberemos el poder de la base de datos `MongoDB`, recordemos que introdujimos este documento:
 
@@ -356,7 +356,7 @@ table(border='1')
 
 Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
 
-![Pantallazo](http://cl.ly/image/3e1e0A021d3R171K0f3v/Screen%20Shot%202012-06-25%20at%2012.51.25%20PM.png)
+![Pantallazo](http://cl.ly/image/2F2O0Z0w1z2F2i2p0Z3O/Screen%20Shot%202012-07-01%20at%209.07.17%20PM.png)
 
 #### Página de Edición de un Producto (/producto/:id)
 
