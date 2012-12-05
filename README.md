@@ -566,7 +566,7 @@ exports.create = function (req, res, next) {
 
 Eso fue sencillo. Quisieramos agregar un link a esta misma página en la página de inicio:
 
-![Pantallazo]()
+![Pantallazo](http://cl.ly/image/2T0t2I0A1A2q/Screen%20Shot%202012-12-05%20at%207.22.36%20AM.png)
 
 * /views/index.jade
 
