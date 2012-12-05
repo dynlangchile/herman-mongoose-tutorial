@@ -398,7 +398,7 @@ Necesitamos renderizar el objecto. Acá usaremos la misma plantilla para edició
 * /views/show_edit.jade
 
 ````jade
-h2 Ver Producto
+h2 #{title}
 form(method='post')
 
   p
