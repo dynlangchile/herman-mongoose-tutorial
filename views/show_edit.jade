@@ -1,0 +1,18 @@
+
+h2 #{title}
+form(method='post')
+
+  p
+    label(for="nombre") Nombre:
+      input(type='text', name='nombre', value=producto.nombre)
+
+  p
+    label(for="descripcion") Descripción:
+      input(type='text', name='descripcion', size=100, value=producto.descripcion)
+
+  p
+    label(for="precio") Precio:
+      input(type='text', name='precio', value=producto.precio)
+
+  p
+    input(type='submit', value='Guardar')

@@ -38,6 +38,8 @@ app.get('/delete-producto/:id', producto.remove)
 
 app.get('/nuevo-producto', producto.create)
 
+app.post('/nuevo-producto', producto.create)
+
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

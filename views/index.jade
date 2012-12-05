@@ -1,13 +1,20 @@
+
 h2 Tabla de Productos
 table(border='1')
   tr
     th Producto
     th Descripción
     th Precio
+    th &nbsp;
   - if (productos)
     - each producto in productos
       tr
         td
-          a(href="/" + producto._id.toString()) #{producto.nombre}
+          a(href="/producto/" + producto._id.toString()) #{producto.nombre}
         td #{producto.descripcion}
         td #{producto.precio}
+        td
+          a(href="/delete-producto/" + producto._id.toString()) Borrar
+
+p
+  a(href='/nuevo-producto') Nuevo Producto

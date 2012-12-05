@@ -90,8 +90,10 @@ Lo que sigue es gestar las rutas que harán estas actividades reales:
     * `POST    /producto/:id`
 * Eliminar un producto
     * `GET     /delete-producto/:id`
-* Crear uno nuevo
+* Crear uno nuevo (Obtener UI)
     * `GET     /nuevo-producto`
+* Enviar el objecto creado a la Base de Datos
+    * `POST    /nuevo-producto`
 
 Para los avanzados en Verbos HTTP, me podrían decir que la creación puede ser hecha con PUT, y el borrado con DELETE, en este tutorial, iremos muy básico, solo con GET y POST. Se invita desde luego toda pull request para hacer este tutorial más firme.
 
@@ -160,6 +162,8 @@ app.post('/producto/:id', producto.update)
 app.get('/delete-producto/:id', producto.remove)
 
 app.get('/nuevo-producto', producto.create)
+
+app.post('/nuevo-producto', producto.create)
 ````
 
 Debemos escribir los handlers en producto.js, responderemos, como placeholders, el nombre de la función. Más adelante, escribirimos codigo adecuado para cada una. Por ejemplo para `show_edit`:
@@ -206,7 +210,9 @@ Queremos mostrar una tabla con la lista de productos que tenemos en nuestra base
 </html>
 
 ````
-Lo cual se renderea a ![esta imagen](http://cl.ly/image/3e1e0A021d3R171K0f3v/Screen%20Shot%202012-06-25%20at%2012.51.25%20PM.png):
+Lo cual se renderea a
+
+![esta imagen](http://cl.ly/image/3e1e0A021d3R171K0f3v/Screen%20Shot%202012-06-25%20at%2012.51.25%20PM.png):
 
 Para lograr esto usaremos un template de `jade`, librería que viene incluída en expressJS. Si observamos, en la carpeta `views`tenemos todo lo que necesitamos: Un archivo `layout.jade`, el cual no tocaremos, y un archivo `index.js` el cual editaremos para llegar al `html` descrito arriba. Abramos el archivo `index.js` para incluir el siguiente código de template `jade`:
 
@@ -273,7 +279,7 @@ var producto_schema = new Schema({
   precio        :   Number
 })
 
-module.exports = producto_schema
+var Producto = module.exports = producto_schema
 ````
 
 ... Y, Modifiquemos nuestros archivos de la siguiente manera:
@@ -308,7 +314,7 @@ var producto_schema = require('../models/producto')
   , Producto = db.model('Producto', producto_schema)
 
 ````
-Ahora, existe, por supuesto la posibilidad de montar de una manera generar la conexión para toda la aplicación. No la tocaremos sin embargo en este tutorial.
+Ahora, existe, por supuesto la posibilidad de montar de una manera general la conexión para toda la aplicación. No la tocaremos sin embargo en este tutorial.
 
 Modificamos la función `exports.index`, siempre dentro de `controllers/producto.js`para que recoja los productos:
 
@@ -349,7 +355,7 @@ table(border='1')
     - each producto in productos
       tr
         td
-          a(href="/" + producto._id.toString()) #{producto.nombre}
+          a(href="/producto/" + producto._id.toString()) #{producto.nombre}
         td #{producto.descripcion}
         td #{producto.precio}
 ````
@@ -358,8 +364,276 @@ Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
 
 ![Pantallazo](http://cl.ly/image/2F2O0Z0w1z2F2i2p0Z3O/Screen%20Shot%202012-07-01%20at%209.07.17%20PM.png)
 
-#### Página de Edición de un Producto (/producto/:id)
+#### Página de Edición de un Producto (GET /producto/:id)
 
 Si clickamos en el link del primer producto obtenidos, tendremos un mensaje que no podemos ver el producto. Tomaremos las medidas para ello.
 
-(WIP: Work in Progress...)
+En general, se pueden dar buenos argumentos para no usar la misma id de producto de la base de datos como indicador `id` para la ruta. Pero recordemos que estamos en un ejemplo. Necesitaremos desarrollar (Y aquí veremos lo atractivo que es el paradigma MVC), una función de modelos, una de controlador y una vista.
+
+
+* controllers/producto.js
+
+````javascript
+exports.show_edit = function (req, res, next) {
+
+  // Obtención del parámetro id desde la url
+  var id = req.params.id
+
+  Producto.findById(id, gotProduct)
+
+  function gotProduct (err, producto) {
+    if (err) {
+      console.log(err)
+      return next(err)
+    }
+
+    return res.render('show_edit', {title: 'Ver Producto', producto: producto})
+  }
+}
+````
+
+Estamos usando `findById`....
+
+-- http://mongoosejs.com/docs/2.7.x/docs/finding-documents.html
+
+Notese el uso del callback, operación IO...
+
+Necesitamos renderizar el objecto. Acá usaremos la misma plantilla para edición, por lo que tenemos que render...
+
+* /views/show_edit.jade
+
+````jade
+h2 Ver Producto
+form(method='post')
+
+  p
+    label(for="nombre") Nombre:
+      input(type='text', name='nombre', value=producto.nombre)
+
+  p
+    label(for="descripcion") Descripción:
+      input(type='text', name='descripcion', size=100, value=producto.descripcion)
+
+  p
+    label(for="precio") Precio:
+      input(type='text', name='precio', value=producto.precio)
+
+  p
+    input(type='submit', value='Guardar')
+````
+
+Obtenemos la siguiente pantalla:
+
+![Pantallazo]()
+
+Sin embargo si presionamos el botón guardar cambios, nada ocurre. Es lo que habilitaremos en el siguiente apartado.
+
+#### Enviar los cambios de un producto (POST producto/:id)
+
+.... Esta es una función completa del controlador:
+
+* /controllers/producto.js
+
+````javascript
+exports.update = function (req, res, next) {
+  var id = req.params.id
+
+  var nombre      = req.body.nombre       || ''
+  var descripcion = req.body.descripcion  || ''
+  var precio      = req.body.precio       || ''
+
+  // Validemos que nombre o descripcion no vengan vacíos
+  if ((nombre=== '') || (descripcion === '')) {
+    console.log('ERROR: Campos vacios')
+    return res.send('Hay campos vacíos, revisar')
+  }
+
+  // Validemos que el precio sea número
+  if (isNaN(precio)) {
+    console.log('ERROR: Precio no es número')
+    return res.send('Precio no es un número !!!!!')
+  }
+
+  Producto.findById(id, gotProduct)
+
+  function gotProduct (err, producto) {
+    if (err) {
+      console.log(err)
+      return next(err)
+    }
+
+    if (!producto) {
+      // Nuevo producto
+
+      // PLACEHOLDER
+      return res.send('Producto Nuevo')
+      // PLACEHOLDER
+    } else {
+      producto.nombre       = nombre
+      producto.descripcion  = descripcion
+      producto.precio       = precio
+
+      producto.save(onSaved);
+    }
+  }
+
+  function onSaved (err) {
+    if (err) {
+      console.log(err)
+      return next(err)
+    }
+
+    return res.redirect('/producto/' + id)
+  }
+}
+````
+
+En caso de id no arrojamos error.... id nueva... placeholder. Algunos querrian usar otra logica como rechazar el post...
+
+#### Borrar un Producto (POST /delete-producto/:id)
+
+Cómo se mencionó arriba, se podría haber usado el verbo DELETE (haciendo [override de método](http://www.endurasoft.com/Blog/post/X-HTTP-Method-Override.aspx)). Para hacer más simple el tutorial, se implementa en GET.
+
+Debemos agregar los links para el eliminado en la lista de productos, es decir en el template de jade:
+
+* views/index.jade
+
+````jade
+h2 Tabla de Productos
+table(border='1')
+  tr
+    th Producto
+    th Descripción
+    th Precio
+    th &nbsp;
+  - if (productos)
+    - each producto in productos
+      tr
+        td
+          a(href="/producto/" + producto._id.toString()) #{producto.nombre}
+        td #{producto.descripcion}
+        td #{producto.precio}
+        td
+          a(href="/delete-producto/" + producto._id.toString()) Borrar
+````
+
+![Pantallazo]()
+
+Y la funcionalidad correspondiente en el controlador:
+
+* /controllers/producto.js
+
+````javascript
+exports.remove = function (req, res, next) {
+  var id = req.params.id
+
+  Producto.findById(id, gotProduct)
+
+  function gotProduct (err, producto) {
+    if (err) {
+      console.log(err)
+      return next(err)
+    }
+
+    if (!producto) {
+      return res.send('Invalid ID. (De algún otro lado la sacaste tú...)')
+    }
+
+    // Tenemos el producto, eliminemoslo
+    producto.remove(onRemoved)
+  }
+
+  function onRemoved (err) {
+    if (err) {
+      console.log(err)
+      return next(err)
+    }
+
+    return res.redirect('/')
+  }
+}
+````
+
+Nótese (con algo de humor por supuesto), como reaccionamos ante una id que no encontramos. Si bien asumimos que esta función es llamada dentro de la página de índice, es posible que los valores quieran ser ingresados directamente (ala REST). El desarrollador debe preveer esta conducta y crear los flujos adecuados.
+
+Cosas que podemos agregar: Hacer una función js de cliente para que despliegue un confirmador (está seguro?) y enviar vía AJAX la llamada a borrar el producto; Podemos cerciorarnos además que quien de la orden esté dentro de una sesión; Podemos agregar un token contra "Cross Site Request Forgery", entre otros.
+
+#### Agregar un Producto (GET /nuevo-producto)
+
+Finalmente, la funcionalidad de agregar productos.
+
+La primera idea es que la función asociada a la ruta, `exports.create`, nos arroje un html con los campos en blanco:
+
+* /controllers/producto.js
+
+````javascript
+exports.create = function (req, res, next) {
+  return res.render('show_edit', {title: 'Ver Producto', producto: {}})
+}
+````
+
+Eso fue sencillo. Quisieramos agregar un link a esta misma página en la página de inicio:
+
+![Pantallazo]()
+
+* /views/index.jade
+
+````jade
+p
+  a(href='/nuevo-producto') Nuevo Producto
+````
+
+![Pantallazo]()
+
+
+Y la función de controlador `exports.create` debe ser modificada, crearemos un desvío según el metodo HTTP que ocupemos (GET o POST)
+
+````javascript
+exports.create = function (req, res, next) {
+  if (req.method === 'GET') {
+    return res.render('show_edit', {title: 'Nuevo Producto', producto: {}})
+  } else if (req.method === 'POST') {
+    // Obtenemos las variables y las validamos
+    var nombre      = req.body.nombre       || ''
+    var descripcion = req.body.descripcion  || ''
+    var precio      = req.body.precio       || ''
+
+    // Validemos que nombre o descripcion no vengan vacíos
+    if ((nombre=== '') || (descripcion === '')) {
+      console.log('ERROR: Campos vacios')
+      return res.send('Hay campos vacíos, revisar')
+    }
+
+    // Validemos que el precio sea número
+    if (isNaN(precio)) {
+      console.log('ERROR: Precio no es número')
+      return res.send('Precio no es un número !!!!!')
+    }
+
+    // Creamos el documento y lo guardamos
+    var producto = new Producto({
+        nombre        : nombre
+      , descripcion   : descripcion
+      , precio        : precio
+    })
+
+    producto.save(onSaved)
+
+    function onSaved (err) {
+      if (err) {
+        console.log(err)
+        return next(err)
+      }
+
+      return res.redirect('/')
+    }
+  }  
+}
+````
+
+Podemos hacer algunas pruebas:
+
+![Pantallazo]()
+
+Y eso sería todo por este tutorial. Insisto, se pueden hacer muchas cosas más, pero el objetivo es introducir al lector en estas tecnologías. Personalmente hubiese hecho algún trabajo para manejar los errores y devolver un error 500, desarrollo de usuarios y sesiones, más javascript de cliente y otros. Para el futuro. Muchas gracias.
+
