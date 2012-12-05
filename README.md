@@ -338,9 +338,9 @@ exports.index = function (req, res, next) {
 }
 ````
 
-Nótese la estructura de callbacks: Cuando se pide la lista de productos, sólo al llegar la respuesta invocamos a `gotProducts`, el cual llama a la renderización a través de `res.render` de la página. Para los que vienen de otros lenguajes, esta manera de modelar, puede ser confusa al principio. Pero tiene sus ventajas en el escenario web, el cual, a mi parecer es completamente orientado al evento.
+Nótese la estructura de callbacks: Cuando se pide la lista de productos, sólo al llegar la respuesta invocamos a `gotProducts`, el cual llama a la renderización a través de `res.render` de la página. Para los que vienen de otros lenguajes esta manera de modelar puede ser confusa al principio. Pero tiene sus ventajas en el escenario web, el cual, a mi parecer es completamente orientado al evento.
 
-Tenemos listo el back-end! Ya tenemos una lista de productos, ejecutamos? Aún no, ya que `res.render` cargaría el _template_ _jade_, pero no le está poniendo los datos. Por lo que modificaremos `views/index.jade` para tal efecto:
+Tenemos listo el back-end! Ya tenemos una lista de productos, ejecutamos? Aún no, ya que `res.render` cargaría el _template_ _jade_, pero no le está insertando los datos. Por lo que modificaremos `views/index.jade` para tal efecto:
 
 * views/index.jade
 
@@ -368,8 +368,7 @@ Bien. `CTRL+C`, `$ node app.js`y veamos el resultado:
 
 Si clickamos en el link del primer producto obtenidos, tendremos un mensaje que no podemos ver el producto. Tomaremos las medidas para ello.
 
-En general, se pueden dar buenos argumentos para no usar la misma id de producto de la base de datos como indicador `id` para la ruta. Pero recordemos que estamos en un ejemplo. Necesitaremos desarrollar (Y aquí veremos lo atractivo que es el paradigma MVC), una función de modelos, una de controlador y una vista.
-
+En general, se pueden dar buenos argumentos para no usar la misma id de producto de la base de datos como indicador `id` para la ruta. Pero recordemos que estamos en un ejemplo didáctico. Necesitaremos desarrollar (Y aquí veremos lo atractivo que es el paradigma MVC), una función de controlador y una vista, no necesitaremos en este ejemplo hacer funciones de modelos, dado que mongoose nos entrega todo. En la medida que veamos más complejidad, es necesario encapsular las funciones de mongoose y las lógicas que necesitemos en funciones de modelo.
 
 * controllers/producto.js
 
@@ -392,13 +391,9 @@ exports.show_edit = function (req, res, next) {
 }
 ````
 
-Estamos usando `findById`....
+Mongoose nos ahorra muchos problemas de desarrollo, tiene la función `findById`, ([Ver documento](http://mongoosejs.com/docs/2.7.x/docs/finding-documents.html)), la que, dado un `id` en string, devuelve el objecto correspondiente (o null, si no existe)
 
--- http://mongoosejs.com/docs/2.7.x/docs/finding-documents.html
-
-Notese el uso del callback, operación IO...
-
-Necesitamos renderizar el objecto. Acá usaremos la misma plantilla para edición, por lo que tenemos que render...
+Necesitamos renderizar el objecto. Acá usaremos la misma plantilla para edición y mostrar el producto:
 
 * /views/show_edit.jade
 
@@ -424,13 +419,13 @@ form(method='post')
 
 Obtenemos la siguiente pantalla:
 
-![Pantallazo]()
+![Pantallazo](http://cl.ly/image/1M3o3r0i3o1a/Screen%20Shot%202012-12-05%20at%206.22.03%20AM.png)
 
-Sin embargo si presionamos el botón guardar cambios, nada ocurre. Es lo que habilitaremos en el siguiente apartado.
+Sin embargo si presionamos el botón guardar cambios, nada ocurre. Es lo que habilitaremos en el siguiente apartado...
 
 #### Enviar los cambios de un producto (POST producto/:id)
 
-.... Esta es una función completa del controlador:
+Esta es un trabajo completo sólo en el controlador (ya que tenemos la vista y modelo en mongoose):
 
 * /controllers/producto.js
 
@@ -463,17 +458,14 @@ exports.update = function (req, res, next) {
     }
 
     if (!producto) {
-      // Nuevo producto
-
-      // PLACEHOLDER
-      return res.send('Producto Nuevo')
-      // PLACEHOLDER
+      console.log('ERROR: ID no existe')
+      return res.send('ID Inválida!')
     } else {
       producto.nombre       = nombre
       producto.descripcion  = descripcion
       producto.precio       = precio
 
-      producto.save(onSaved);
+      producto.save(onSaved)
     }
   }
 
@@ -488,11 +480,11 @@ exports.update = function (req, res, next) {
 }
 ````
 
-En caso de id no arrojamos error.... id nueva... placeholder. Algunos querrian usar otra logica como rechazar el post...
+Controlamos los errores de no ID y parámetros en blanco. A `next()` le estamos dando un parámetros. En iteraciones posteriores debemos configurar que si `next` recibe parámetros, entregarle un error 500 al usuario. Pasaremos de esta funcionalidad por ahora.
 
 #### Borrar un Producto (POST /delete-producto/:id)
 
-Cómo se mencionó arriba, se podría haber usado el verbo DELETE (haciendo [override de método](http://www.endurasoft.com/Blog/post/X-HTTP-Method-Override.aspx)). Para hacer más simple el tutorial, se implementa en GET.
+Cómo se mencionó arriba, se podría haber usado el verbo DELETE (haciendo [override de método](http://www.endurasoft.com/Blog/post/X-HTTP-Method-Override.aspx)). Para hacer más simple el tutorial, se implementa en `GET`.
 
 Debemos agregar los links para el eliminado en la lista de productos, es decir en el template de jade:
 
@@ -517,7 +509,7 @@ table(border='1')
           a(href="/delete-producto/" + producto._id.toString()) Borrar
 ````
 
-![Pantallazo]()
+![Pantallazo](http://cl.ly/image/433v3Y1Z1T0b/Screen%20Shot%202012-12-05%20at%207.18.01%20AM.png)
 
 Y la funcionalidad correspondiente en el controlador:
 
@@ -583,8 +575,7 @@ p
   a(href='/nuevo-producto') Nuevo Producto
 ````
 
-![Pantallazo]()
-
+![Pantallazo](http://cl.ly/image/2u3i0b0y0R34/Screen%20Shot%202012-12-05%20at%207.21.33%20AM.png)
 
 Y la función de controlador `exports.create` debe ser modificada, crearemos un desvío según el metodo HTTP que ocupemos (GET o POST)
 
@@ -633,7 +624,7 @@ exports.create = function (req, res, next) {
 
 Podemos hacer algunas pruebas:
 
-![Pantallazo]()
+![Pantallazo](http://cl.ly/image/0J1B0e0H0I0t/Screen%20Shot%202012-12-05%20at%207.57.02%20AM.png)
+![Pantallazo](http://cl.ly/image/1p231T2c3J0k/Screen%20Shot%202012-12-05%20at%208.11.18%20AM.png)
 
 Y eso sería todo por este tutorial. Insisto, se pueden hacer muchas cosas más, pero el objetivo es introducir al lector en estas tecnologías. Personalmente hubiese hecho algún trabajo para manejar los errores y devolver un error 500, desarrollo de usuarios y sesiones, más javascript de cliente y otros. Para el futuro. Muchas gracias.
-
