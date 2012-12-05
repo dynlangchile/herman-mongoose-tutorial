@@ -425,7 +425,7 @@ Sin embargo si presionamos el botón guardar cambios, nada ocurre. Es lo que hab
 
 #### Enviar los cambios de un producto (POST producto/:id)
 
-Esta es un trabajo completo sólo en el controlador (ya que tenemos la vista y modelo en mongoose):
+Este es un trabajo completo sólo en el controlador (ya que tenemos la vista y modelo en mongoose):
 
 * /controllers/producto.js
 
